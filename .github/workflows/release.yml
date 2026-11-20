@@ -1,0 +1,62 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            name: windows
+          - os: macos-latest
+            name: macos
+          - os: ubuntu-latest
+            name: linux
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+
+      - name: Build (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          pyinstaller Pastype.spec
+          mv dist/Pastype.exe Pastype-windows.exe
+        shell: bash
+      - name: Build (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          pyinstaller Pastype.spec
+          tar -czf Pastype-macos.tar.gz -C dist Pastype
+      - name: Build (Linux)
+        if: runner.os == 'Linux'
+        # pyautogui needs an X display at import time, which PyInstaller's analysis triggers
+        run: |
+          sudo apt-get update && sudo apt-get install -y xvfb
+          xvfb-run pyinstaller Pastype.spec
+          tar -czf Pastype-linux.tar.gz -C dist Pastype
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: Pastype-*
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - run: gh release create "$GITHUB_REF_NAME" Pastype-* --repo "$GITHUB_REPOSITORY" --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -27,7 +27,7 @@ class PastypeApp:
                                lambda: root.after(0, self.stop),
                                lambda: root.after(0, self.toggle_window))
         self._build()
-        self.hotkeys.set_enabled(self.hotkey_enabled.get())
+        self._toggle_hotkeys()
         root.protocol("WM_DELETE_WINDOW", self.close)
         root.after(100, self._poll)
 
@@ -54,6 +54,10 @@ class PastypeApp:
         ttk.Button(buttons, text="Начать ввод", command=self.start).pack(side="left")
         ttk.Button(buttons, text="Остановить", command=self.stop).pack(side="left", padx=6)
         ttk.Button(buttons, text="Тестовый ввод", command=self.test).pack(side="right")
+        ttk.Label(f, text="Свой текст:").grid(row=11, column=0, sticky="w", pady=(12, 3))
+        self.text_box = tk.Text(f, width=40, height=6, wrap="word", undo=True)
+        self.text_box.grid(row=12, column=0, columnspan=2, sticky="ew")
+        ttk.Button(f, text="Ввести из поля", command=self.start_from_box).grid(row=13, column=0, sticky="w", pady=(6, 0))
 
     def _values(self):
         vals = (int(self.char_delay.get()), int(self.line_delay.get()), float(self.start_delay.get()))
@@ -73,7 +77,7 @@ class PastypeApp:
             messagebox.showerror("Pastype", f"Ошибка настроек или буфера обмена: {exc}")
             return
         if not text:
-            messagebox.showinfo("Pastype", "Буфер обмена пуст.")
+            messagebox.showinfo("Pastype", "Нет текста для ввода.")
             return
         if not messagebox.askyesno("Подтвердите ввод", f"Начать ввод {len(text)} символов?\nПереключитесь в целевое окно."):
             return
@@ -94,6 +98,9 @@ class PastypeApp:
         if hasattr(self, "stop_event"):
             self.stop_event.set()
             self.status.set("Остановка…")
+
+    def start_from_box(self):
+        self.start(self.text_box.get("1.0", "end-1c"))
 
     def test(self):
         self.start("Pastype: test 123\n")
