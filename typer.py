@@ -35,7 +35,7 @@ def _press_unicode(char):
     inputs = _unicode_inputs(char)
     array = (INPUT * len(inputs))(*inputs)
     if ctypes.windll.user32.SendInput(len(inputs), array, ctypes.sizeof(INPUT)) != len(inputs):
-        raise OSError(f"Windows отклонил ввод символа {char!r} (окно запущено от администратора?)")
+        raise OSError(f"Windows rejected input of {char!r} (is the target window running as Administrator?)")
 
 def _sleep(seconds, stop):
     return stop.wait(seconds) if seconds > 0 else stop.is_set()

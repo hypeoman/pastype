@@ -34,9 +34,9 @@ To build a binary yourself: `pyinstaller Pastype.spec` → `dist/Pastype.exe` (o
 
 ### How to type
 
-1. Copy text to the clipboard and press **Начать ввод** (or **F8**), or type/paste text into the **Свой текст** field and press **Ввести из поля**. Confirm.
+1. Copy text to the clipboard and press **Type clipboard** (or **F8**), or type/paste text into the **Custom text** field and press **Type text**. Confirm.
 2. Switch to the target window within the start delay (3 s by default).
-3. **F9** or **Остановить** stops typing. **F10** hides/shows the window.
+3. **F9** or **Stop** stops typing. **F10** hides/shows the window.
 
 Settings: character delay (ms), line delay (ms, after each Enter), start delay (s). Increase the delays if the target drops characters (slow VNC links, web consoles).
 
@@ -67,7 +67,7 @@ Settings are saved to `~/AppData/Local/Pastype/settings.json` (on Windows: `%LOC
   xattr -d com.apple.quarantine Pastype
   ```
 - Grant **Accessibility** permission (System Settings → Privacy & Security → Accessibility) to Pastype, or to your terminal when running from source. Without it, keystrokes are silently dropped.
-- Global hotkeys (F8/F9/F10) are unreliable on macOS (the `keyboard` library needs root there). If enabling them shows an error, uncheck **Глобальные горячие клавиши** and use the buttons. On Mac keyboards F-keys may also require **Fn**.
+- Global hotkeys (F8/F9/F10) are unreliable on macOS (the `keyboard` library needs root there). If enabling them shows an error, uncheck **Global hotkeys** and use the buttons. On Mac keyboards F-keys may also require **Fn**.
 - No Unicode: only ASCII is typed, other characters are skipped.
 - From source: Homebrew Python needs tkinter installed separately: `brew install python-tk`.
 
